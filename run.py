@@ -4,6 +4,7 @@ import uuid
 import random
 import collections
 import numpy as np
+import json
 
 app = Flask(__name__)
 
@@ -25,7 +26,7 @@ class Game:
     cards = []
     hightolow = []
     lowtohigh = []
-    stocks = range(2, 99)
+    stocks = list(range(2, 99))
 
 
 class Member:
@@ -92,7 +93,7 @@ def start_game(gameid):
     for mid in members:
         member = game.members[mid]
         member.holdcards = []
-        for i in range(6):
+        while len(member.holdcards) < 6:
             member.holdcards.append(game.stocks.pop(random.randint(0, len(game.stocks) - 1)))
 
     game.hightolow = []
@@ -103,13 +104,14 @@ def start_game(gameid):
     game.lowtohigh.append([1])
 
     cache.set(gameid, game)
-    return ' ,'.join(game.routelist)
+    return json.dumps(game.routelist)
 
 
 # next to player the game
 @app.route('/<gameid>/next')
 def processing_game(gameid):
     game = cache.get(gameid)
+    members = [mid for mid in game.members.keys()]
 
     game.routeidx = (game.routeidx + 1) % 6
 
@@ -125,11 +127,11 @@ def processing_game(gameid):
 
 
 # set the card on the line
-$app.route('/<gameid>/<clientid>/set/<lineid>/<cardnum>')
+@app.route('/<gameid>/<clientid>/set/<int:lineid>/<int:cardnum>')
 def setcard_game(gameid, clientid, lineid, cardnum):
     game = cache.get(gameid)
 
-    if lineid in [0,1]:
+    if lineid in [0, 1]:
         # 100 -> 2
         if game.hightolow[lineid][-1] > cardnum:
             game.hightolow[lineid].append(cardnum)
@@ -137,7 +139,7 @@ def setcard_game(gameid, clientid, lineid, cardnum):
             if (game.hightolow[lineid][-1] + 10) == cardnum:
                 game.hightolow[lineid].append(cardnum)
             else:
-                return 'Error'
+                return 'Error2'
     elif lineid in [2, 3]:
         # 1 -> 99
         if game.lowtohigh[lineid%2][-1] < cardnum:
@@ -146,7 +148,7 @@ def setcard_game(gameid, clientid, lineid, cardnum):
             if (game.lowtohigh[lineid%2][-1] - 10) == cardnum:
                 game.lowtohigh[lineid%2].append(cardnum)
             else:
-                return 'Error'
+                return 'Error3'
     else:
         return 'Error'
 
@@ -167,7 +169,24 @@ def member_status(gameid, clientid):
 
     holdcards = game.members[clientid].holdcards
 
-    return 'your turn:' + yourturn + ' hold cards: ' + ','.join(holdcards)
+    response = {'turn': yourturn, 'holdcards': holdcards}
+
+    return json.dumps(response)
+
+
+# card positiions the game
+@app.route('/<gameid>/cardlists')
+def cardlists_game(gameid):
+    game = cache.get(gameid)
+
+    response = []
+    for i in range(4):
+        if i in [0,1]:
+            response.append(game.hightolow[i])
+        else:
+            response.append(game.lowtohigh[i%2])
+
+    return json.dumps(response)
 
 
 # set user information the game
@@ -183,3 +202,7 @@ def edit_profile(gameid, clientid, nickname):
         return 'changed user name'
     else:
         return 'NG'
+
+
+if __name__ == "__main__":
+    app.run(debug=True, port=5000, threaded=True)
