@@ -215,5 +215,4 @@ def edit_profile(gameid, clientid, nickname):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
-#    app.run(debug=True, port=5000, threaded=True)
+    app.run()
