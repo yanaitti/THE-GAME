@@ -11,7 +11,8 @@ import json
 app = Flask(__name__)
 
 # Cacheインスタンスの作成
-cache = redis.from_url(os.environ['REDISCLOUD_URL'])
+url = urlparse.urlparse(os.environ.get('REDISCLOUD_URL'))
+cache = redis.Redis(host=url.hostname, port=url.port, password=url.password)
 
 class Game:
     status = 'waiting' # waiting, started, end
