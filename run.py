@@ -1,16 +1,14 @@
-from flask import Flask, Response
+from flask import Flask, Response, render_template
 from flask_caching import Cache
 import uuid
 import random
 import collections
 import numpy as np
 import json
-from flask_cors import CORS # CORS対策
 
 # CORS対策 pip install flask-cors
 
 app = Flask(__name__)
-CORS(app) #CORS対策
 
 # Cacheインスタンスの作成
 cache = Cache(app, config={
@@ -36,6 +34,11 @@ class Game:
 class Member:
     nickname = ''
     holdcards = []
+
+
+@app.route('/')
+def homepage():
+    return render_template('index.html')
 
 
 # create the game group
@@ -111,13 +114,20 @@ def start_game(gameid):
     return json.dumps(game.routelist)
 
 
+# status the game
+@app.route('/<gameid>/status')
+def game_status(gameid):
+    game = cache.get(gameid)
+    return game.status
+
+
 # next to player the game
 @app.route('/<gameid>/next')
 def processing_game(gameid):
     game = cache.get(gameid)
     members = [mid for mid in game.members.keys()]
 
-    game.routeidx = (game.routeidx + 1) % 6
+    game.routeidx = (game.routeidx + 1) % len(game.members)
 
     # refresh holdcards for all members
     for mid in members:
