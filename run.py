@@ -1,18 +1,21 @@
 from flask import Flask, Response, render_template
-from redis
+from flask_caching import Cache
 import uuid
 import random
 import collections
 import numpy as np
 import json
 
-# CORS対策 pip install flask-cors
-
 app = Flask(__name__)
 
 # Cacheインスタンスの作成
-url = urlparse.urlparse(os.environ.get('REDISCLOUD_URL'))
-cache = redis.Redis(host=url.hostname, port=url.port, password=url.password)
+cache = Cache(app, config={
+    'CACHE_TYPE': 'redis',
+    'CACHE_DEFAULT_TIMEOUT': 60 * 60 * 24,
+    'CACHE_REDIS_HOST': 'localhost',
+    'CACHE_REDIS_PORT': 6379,
+    'CACHE_REDIS_DB': '0'
+})
 
 class Game:
     status = 'waiting' # waiting, started, end
@@ -214,5 +217,5 @@ def edit_profile(gameid, clientid, nickname):
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
 #    app.run(debug=True, port=5000, threaded=True)
