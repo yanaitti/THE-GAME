@@ -3,18 +3,16 @@ from flask_caching import Cache
 import uuid
 import random
 import collections
-import numpy as np
 import json
+import os
 
 app = Flask(__name__)
 
 # Cacheインスタンスの作成
 cache = Cache(app, config={
     'CACHE_TYPE': 'redis',
+    'CACHE_REDIS_URL': os.environ.get('REDIS_URL', 'redis://localhost:6379'),
     'CACHE_DEFAULT_TIMEOUT': 60 * 60 * 24,
-    'CACHE_REDIS_HOST': 'localhost',
-    'CACHE_REDIS_PORT': 6379,
-    'CACHE_REDIS_DB': '0'
 })
 
 class Game:
