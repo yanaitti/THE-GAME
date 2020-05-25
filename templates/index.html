@@ -7,39 +7,40 @@
   </head>
   <body>
     <div id='app2'>
+      <input id="cName_inp" placeholder="ニックネームを入力してください"><br/>
+      <br/>
       <button id='createGame'>ゲームを作る(Make a Game)</button><br/>
       Game ID: <span id='gId'></span><br/>
+      Game Status: <span id='gStatus'></span><br/>
       <hr/>
       <button id="joinGame">ゲームに参加する(Join the Game)</button><br/>
       <input id="gId_inp" placeholder="GameIDを入力してください"><br/>
-      <input id="cName_inp" placeholder="ニックネームを入力してください"><br/>
       Your ID: <span id='cId'></span><br/>
       Your Name: <span id='cName'></span><br/>
-      Game Status: <span id='gStatus'></span><br/>
       <div id='sec1' style='display:none'>
         <hr/>
         <button id="startGame">ゲームを始める(Let's start the Game)</button><br/>
+        <h2>Member Applying</h2>
+        <span id='applyingList'></span>
+        <br/>
         <h2>Member Routation</h2>
         <span id='routeList'></span>
       </div>
       <div id='sec2' style='display:none'>
         <hr/>
-        <button id="status">カードを確認する(Check the cards)</button><br/>
         Your Turn: <span id='yTurn'></span><br/>
         Your Cards:<br/>
         <span id='holdCards'></span><br/>
         <hr/>
         Game Cards:<br/>
-        <span id='gameCards'></span><br/>
+        <input type='radio' name='area' id='area' value='0'/>[100->2]&nbsp;<span id='gameCards0'></span><br/>
+        <input type='radio' name='area' id='area' value='1'/>[100->2]&nbsp;<span id='gameCards1'></span><br/>
+        <input type='radio' name='area' id='area' value='2'/>[1->99]&nbsp;<span id='gameCards2'></span><br/>
+        <input type='radio' name='area' id='area' value='3'/>[1->99]&nbsp;<span id='gameCards3'></span><br/>
+        <br/>
         <hr/>
       </div>
       <div id='sec3' style='display:none'>
-        <select id="area">
-          <option value="0">[0]100 -> 2</option>
-          <option value="1">[1]100 -> 2</option>
-          <option value="2">[2]1 -> 99</option>
-          <option value="3">[3]1 -> 99</option>
-        </select>
         <input id="cardNum_inp" placeholder="番号を入力してください"><br/>
         <button id="putCard">カードを出す(Put the cards)</button><br/>
         <br/>
@@ -50,7 +51,7 @@
     </div>
 
     <script>
-    var timeout = 3000;
+    var timeout = 1000;
     var timer = '';
 
     $(function() {
@@ -59,7 +60,7 @@
 
       // Create Game
       $('#createGame').click(function() {
-        $.ajax('create',
+        $.ajax('create' + '/' + $('#cName_inp').val(),
           {
             type: 'get',
           }
@@ -67,11 +68,12 @@
         .done(function(data) {
           $('#gId').text(data);
           $('#cId').text(data);
-          $('#cName').text(data);
+          $('#cName').text($('#cName_inp').val());
           $('#gStatus').text('waiting');
           gId = data;
           cId = data;
           $('#sec1').show();
+          timer = setTimeout(status_check(gId, cId), timeout)
         })
         .fail(function() {
           $('#message').text('エラーが発生しました');
@@ -92,7 +94,7 @@
           $('#gStatus').text(_tmp[2]);
           gId = $('#gId_inp').val();
           cId = _tmp[0];
-          timer = setTimeout(timer_check(gId, cId), timeout)
+          timer = setTimeout(status_check(gId, cId), timeout)
         })
         .fail(function() {
           $('#message').text('エラーが発生しました');
@@ -111,23 +113,16 @@
           for(var j in data){
             $('#routeList').append(data[j] + '<br/>')
           }
-          timer = setTimeout(timer_check(gId, cId), timeout)
         })
         .fail(function() {
           $('#message').text('エラーが発生しました');
         });
       });
 
-      // Check Your Status
-      $('#status').click(function() {
-        members_status(gId, cId);
-        cards_check(gId);
-      });
-
       // Put your card
       $('#putCard').click(function() {
         // put your card
-        $.ajax(gId + '/' + cId + '/set/' + $('#area').val() + '/' + $('#cardNum_inp').val(),
+        $.ajax(gId + '/' + cId + '/set/' + $('input[name="area"]:checked').val() + '/' + $('#cardNum_inp').val(),
           {
             type: 'get',
           }
@@ -138,9 +133,7 @@
         .fail(function() {
           $('#message').text('エラーが発生しました');
         });
-
-        members_status(gId, cId);
-        cards_check(gId);
+        $('#cardNum_inp').val('')
       });
 
       // Next player
@@ -158,85 +151,58 @@
           $('#message').text('エラーが発生しました');
         });
       });
-
     });
 
-    var timer_check = function(gId, cId){
-      console.log('timer_check');
+    var status_check = function(gId, cId){
       setTimeout(function(){
-        console.log('timer_check in');
-        game_status(gId)
-        if($('#gStatus').text() == 'started'){
-          $('#sec2').show()
-          members_status(gId, cId)
-          cards_check(gId)
-
-          if($('#yTurn').text() == 'your turn'){
-            $('#sec3').show();
-          }else{
-            $('#sec3').css('display', 'none');
+        // all status
+        $.getJSON(gId + '/status',
+          {
+            type: 'get',
           }
-        }else if($('#gStatus').text() == 'waiting'){
-          $('#sec2').css('display', 'none');
-        }
-        timer = setTimeout(timer_check(gId, cId), timeout)
+        )
+        .done(function(data) {
+          console.log(data)
+          $('#gStatus').text(data.status);
+          playerPos = 0;
+
+          // Applying List
+          $('#applyingList').empty();
+          for(var pIdx in data.players){
+            console.log(data.players[pIdx])
+            $('#applyingList').append(data.players[pIdx].nickname + '(' + data.players[pIdx].playerid + ')' + ',');
+            if(cId == data.players[pIdx].playerid){
+              playerPos = pIdx;
+            }
+          }
+
+          if(data.status == 'started'){
+            $('#sec2').show()
+
+            // game cards
+            $('#gameCards0').text(data.hightolow[0])
+            $('#gameCards1').text(data.hightolow[1])
+            $('#gameCards2').text(data.lowtohigh[0])
+            $('#gameCards3').text(data.lowtohigh[1])
+
+            // hold cards
+            $('#holdCards').text(data.players[playerPos].holdcards.join(','))
+
+            // checking turn
+            if(data.routelist[data.routeidx] == cId){
+              $('#yTurn').text('your turn')
+              $('#sec3').show();
+            }else{
+              $('#yTurn').text('not your turn')
+              $('#sec3').css('display', 'none');
+            }
+          }
+        })
+        .fail(function() {
+          $('#message').text('エラーが発生しました');
+        });
+        timer = setTimeout(status_check(gId, cId), timeout)
       }, timeout);
-    }
-
-    function game_status(gId){
-      // members status
-      $.ajax(gId + '/status',
-        {
-          type: 'get',
-        }
-      )
-      .done(function(data) {
-        console.log(data)
-        $('#gStatus').text(data)
-      })
-      .fail(function() {
-        $('#message').text('エラーが発生しました');
-      });
-    }
-
-    function members_status(gId, cId){
-      // members status
-      $.getJSON(gId + '/' + cId + '/status',
-        {
-          type: 'get',
-        }
-      )
-      .done(function(data) {
-        console.log(data)
-        if(data.turn){
-          $('#yTurn').text('your turn')
-        }else{
-          $('#yTurn').text('not your turn')
-        }
-        $('#holdCards').text(data.holdcards.join(','))
-      })
-      .fail(function() {
-        $('#message').text('エラーが発生しました');
-      });
-    }
-
-    function cards_check(gId){
-      // game caards check
-      $.getJSON(gId + '/cardlists',
-        {
-          type: 'get',
-        }
-      )
-      .done(function(data) {
-        console.log(data)
-        $('#gameCards').empty();
-        for(var j in data){
-          $('#gameCards').append('[' + j + ']:' + data[j] + '<br/>')
-        }
-      })
-      .fail(function() {
-        $('#message').text('エラーが発生しました');
-      });
     }
 
     </script>

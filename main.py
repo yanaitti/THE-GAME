@@ -51,8 +51,8 @@ def homepage():
 
 
 # create the game group
-@app.route('/create')
-def create_game():
+@app.route('/create/<nickname>')
+def create_game(nickname):
     game = {
         'status': 'waiting',
         'routeidx': 0,
@@ -63,7 +63,7 @@ def create_game():
     gameid = str(uuid.uuid4())
     game['gameid'] = gameid
     player['playerid'] = gameid
-    player['nickname'] = gameid
+    player['nickname'] = nickname
     player['holdcards'] = []
     game['players'].append(player)
 
@@ -135,13 +135,6 @@ def start_game(gameid):
     return json.dumps(game['routelist'])
 
 
-# status the game
-@app.route('/<gameid>/status')
-def game_status(gameid):
-    game = cache.get(gameid)
-    return game['status']
-
-
 # next to player the game
 @app.route('/<gameid>/next')
 def processing_game(gameid):
@@ -153,7 +146,6 @@ def processing_game(gameid):
 
     # refresh holdcards for all members
     for player in players:
-        player['holdcards'] = []
         while len(player['holdcards']) < 6:
             player['holdcards'].append(game['stocks'].pop(random.randint(0, len(game['stocks']) - 1)))
 
@@ -196,59 +188,12 @@ def setcard_game(gameid, clientid, lineid, cardnum):
     return 'ok'
 
 
-# user status the game
-@app.route('/<gameid>/<clientid>/status')
-def member_status(gameid, clientid):
-    game = cache.get(gameid)
-    player = [player for player in game['players'] if player['playerid'] == clientid][0]
-    app.logger.debug(gameid)
-    app.logger.debug(clientid)
-    app.logger.debug(player)
-
-    yourturn = False
-
-    routeList = game['routelist']
-    routeIdx = game['routeidx']
-
-    if routeList[routeIdx] == clientid:
-        yourturn = True
-
-    app.logger.debug(player['holdcards'])
-    holdcards = player['holdcards']
-
-    response = {'turn': yourturn, 'holdcards': holdcards}
-
-    return json.dumps(response)
-
-
-# card positiions the game
-@app.route('/<gameid>/cardlists')
-def cardlists_game(gameid):
+# all status the game
+@app.route('/<gameid>/status')
+def game_status(gameid):
     game = cache.get(gameid)
 
-    response = []
-    for i in range(4):
-        if i in [0,1]:
-            response.append(game['hightolow'][i])
-        else:
-            response.append(game['lowtohigh'][i%2])
-
-    return json.dumps(response)
-
-
-# set user information the game
-# @app.route('/<gameid>/<clientid>/profile/set/<nickname>')
-# def edit_profile(gameid, clientid, nickname):
-#     game = cache.get(gameid)
-#
-#     if clientid in game.members:
-#         member = game.members[clientid]
-#         member.nickname = nickname
-#
-#         cache.set(gameid, game)
-#         return 'changed user name'
-#     else:
-#         return 'NG'
+    return json.dumps(game)
 
 
 if __name__ == "__main__":
