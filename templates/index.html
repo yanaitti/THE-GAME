@@ -60,6 +60,7 @@
 
       // Create Game
       $('#createGame').click(function() {
+        $('#message').empty();
         $.ajax('create' + '/' + $('#cName_inp').val(),
           {
             type: 'get',
@@ -82,6 +83,7 @@
 
       // Join Game
       $('#joinGame').click(function() {
+        $('#message').empty();
         $.ajax($('#gId_inp').val() + '/join/' + $('#cName_inp').val(),
           {
             type: 'get',
@@ -103,6 +105,7 @@
 
       // Start Game
       $('#startGame').click(function() {
+        $('#message').empty();
         $.getJSON(gId + '/start',
           {
             type: 'get',
@@ -121,6 +124,7 @@
 
       // Put your card
       $('#putCard').click(function() {
+        $('#message').empty();
         // put your card
         $.ajax(gId + '/' + cId + '/set/' + $('input[name="area"]:checked').val() + '/' + $('#cardNum_inp').val(),
           {
@@ -138,6 +142,7 @@
 
       // Next player
       $('#nextPlayer').click(function() {
+        $('#message').empty();
         $.ajax(gId + '/next',
           {
             type: 'get',
@@ -155,6 +160,7 @@
 
     var status_check = function(gId, cId){
       setTimeout(function(){
+        $('#message').empty();
         // all status
         $.getJSON(gId + '/status',
           {
