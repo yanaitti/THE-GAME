@@ -17,16 +17,17 @@
       <input id="gId_inp" placeholder="GameIDを入力してください"><br/>
       Your ID: <span id='cId'></span><br/>
       Your Name: <span id='cName'></span><br/>
+      <hr/>
+      <h2>Member Applying</h2>
+      <span id='applyingList'></span>
+      <br/>
       <div id='sec1' style='display:none'>
         <hr/>
         <button id="startGame">ゲームを始める(Let's start the Game)</button><br/>
-        <h2>Member Applying</h2>
-        <span id='applyingList'></span>
-        <br/>
-        <h2>Member Routation</h2>
-        <span id='routeList'></span>
       </div>
       <div id='sec2' style='display:none'>
+        <h2>Member Routation</h2>
+        <span id='routeList'></span>
         <hr/>
         Your Turn: <span id='yTurn'></span><br/>
         Your Cards:<br/>
@@ -112,10 +113,6 @@
           }
         )
         .done(function(data) {
-          $('#routeList').empty();
-          for(var j in data){
-            $('#routeList').append(data[j] + '<br/>')
-          }
         })
         .fail(function() {
           $('#message').text('エラーが発生しました');
@@ -184,6 +181,8 @@
 
           if(data.status == 'started'){
             $('#sec2').show()
+            // route List
+            $('#routeList').text(data.routelist.join(','))
 
             // game cards
             $('#gameCards0').text(data.hightolow[0])
