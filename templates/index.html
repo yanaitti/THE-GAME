@@ -51,11 +51,11 @@
 
     <script>
     var timeout = 3000;
+    var timer = '';
 
     $(function() {
       var gId = '';
       var cId = '';
-      var timer = '';
 
       // Create Game
       $('#createGame').click(function() {
@@ -71,7 +71,7 @@
           $('#gStatus').text('waiting');
           gId = data;
           cId = data;
-          $('#sec1').show()
+          $('#sec1').show();
         })
         .fail(function() {
           $('#message').text('エラーが発生しました');
