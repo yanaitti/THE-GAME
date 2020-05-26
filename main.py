@@ -17,19 +17,6 @@ cache = Cache(app, config={
 })
 
 
-@app.route('/redis/<key>')
-@cache.cached(timeout=30)
-def get_value(key):
-    return cache.get(key)
-
-
-@app.route('/redis/<key>/<value>')
-@cache.cached(timeout=30)
-def set_value(key, value):
-    cache.set(key, value)
-    return 'OK'
-
-
 @app.route('/')
 def homepage():
     return render_template('index.html')
