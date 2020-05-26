@@ -5,6 +5,7 @@ import random
 import collections
 import json
 import os
+import copy
 
 app = Flask(__name__)
 
@@ -14,22 +15,6 @@ cache = Cache(app, config={
     'CACHE_REDIS_URL': os.environ.get('REDIS_URL', 'redis://localhost:6379'),
     'CACHE_DEFAULT_TIMEOUT': 60 * 60 * 2,
 })
-
-class Game:
-    status = 'waiting' # waiting, started, end
-    gameid = ''
-    members = {}
-    routelist = []
-    routeidx = 0
-    cards = []
-    hightolow = []
-    lowtohigh = []
-    stocks = list(range(2, 99))
-
-
-class Member:
-    nickname = ''
-    holdcards = []
 
 
 @app.route('/redis/<key>')
@@ -113,9 +98,10 @@ def start_game(gameid):
     app.logger.debug(game)
     game['status'] = 'started'
 
-    playerids = [player['playerid'] for player in game['players']]
-    random.shuffle(playerids)
-    game['routelist'] = playerids
+    # playerids = [player['playerid'] for player in game['players']]
+    routelist = copy.copy(game['players'])
+    random.shuffle(routelist)
+    game['routelist'] = routelist
 
     players = game['players']
 
@@ -147,7 +133,10 @@ def processing_game(gameid):
     # refresh holdcards for all members
     for player in players:
         while len(player['holdcards']) < 6:
-            player['holdcards'].append(game['stocks'].pop(random.randint(0, len(game['stocks']) - 1)))
+            if len(game['stocks']) > 0:
+                player['holdcards'].append(game['stocks'].pop(random.randint(0, len(game['stocks']) - 1)))
+            else:
+                break
 
     cache.set(gameid, game)
     return 'go on to the next user'

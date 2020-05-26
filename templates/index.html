@@ -26,7 +26,7 @@
         <button id="startGame">ゲームを始める(Let's start the Game)</button><br/>
       </div>
       <div id='sec2' style='display:none'>
-        <h2>Member Routation</h2>
+        <h2>Member Rotation</h2>
         <span id='routeList'></span>
         <hr/>
         Your Turn: <span id='yTurn'></span><br/>
@@ -146,7 +146,7 @@
           }
         )
         .done(function(data) {
-          console.log(data)
+          // console.log(data)
           $('#message').text('次の人に移動しました');
         })
         .fail(function() {
@@ -172,7 +172,7 @@
           // Applying List
           $('#applyingList').empty();
           for(var pIdx in data.players){
-            console.log(data.players[pIdx])
+            // console.log(data.players[pIdx])
             $('#applyingList').append(data.players[pIdx].nickname + '(' + data.players[pIdx].playerid + ')' + ',');
             if(cId == data.players[pIdx].playerid){
               playerPos = pIdx;
@@ -182,7 +182,14 @@
           if(data.status == 'started'){
             $('#sec2').show()
             // route List
-            $('#routeList').text(data.routelist.join(','))
+            $('#routeList').empty();
+            for(var rIdx in data.routelist){
+              if(data.routelist[rIdx].playerid == data.routelist[data.routeidx].playerid){
+                $('#routeList').append('<b>&gt;' + data.routelist[rIdx].nickname + '</b><br/>');
+              }else{
+                $('#routeList').append(data.routelist[rIdx].nickname + '<br/>');
+              }
+            }
 
             // game cards
             $('#gameCards0').text(data.hightolow[0])
@@ -194,7 +201,7 @@
             $('#holdCards').text(data.players[playerPos].holdcards.join(','))
 
             // checking turn
-            if(data.routelist[data.routeidx] == cId){
+            if(data.routelist[data.routeidx].playerid == cId){
               $('#yTurn').text('your turn')
               $('#sec3').show();
             }else{
