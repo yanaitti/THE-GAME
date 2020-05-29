@@ -49,7 +49,7 @@ def create_game(nickname):
 @app.route('/<gameid>/waiting')
 def waiting_game(gameid):
     game = cache.get(gameid)
-    game.status = 'waiting'
+    game['status'] = 'waiting'
     cache.set(gameid, game)
     return 'reset game status'
 
