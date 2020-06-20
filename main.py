@@ -28,7 +28,6 @@ def create_game(nickname):
     game = {
         'status': 'waiting',
         'routeidx': 0,
-        'stocks': list(range(2, 99)),
         'players': []}
     player = {}
 
@@ -84,6 +83,7 @@ def start_game(gameid):
     app.logger.debug(gameid)
     app.logger.debug(game)
     game['status'] = 'started'
+    game['stocks'] = list(range(2, 99))
 
     # playerids = [player['playerid'] for player in game['players']]
     routelist = copy.copy(game['players'])
