@@ -39,7 +39,8 @@
         <input type='radio' name='area' id='area' value='1'/>[100->2]&nbsp;<span id='gameCards1'></span><br/>
         <input type='radio' name='area' id='area' value='2'/>[1->99]&nbsp;<span id='gameCards2'></span><br/>
         <input type='radio' name='area' id='area' value='3'/>[1->99]&nbsp;<span id='gameCards3'></span><br/>
-        <br/>
+        Submited Cards in turn:<br/>
+        <div id='submitCards'></div><br/>
         <hr/>
       </div>
       <div id='sec3' style='display:none'>
@@ -200,11 +201,18 @@
 
             // hold cards
             $('#holdCards').text(data.players[playerPos].holdcards.join(','))
+            // submit cards
+            $('#submitCards').text(data.submit.join(','))
 
             // checking turn
             if(data.routelist[data.routeidx].playerid == cId){
               $('#yTurn').text('your turn')
               $('#sec3').show();
+              if(data.submit.length >= 2){
+                $('#nextPlayer').prop('disabled', false);
+              }else{
+                $('#nextPlayer').prop('disabled', true);
+              }
             }else{
               $('#yTurn').text('not your turn')
               $('#sec3').css('display', 'none');

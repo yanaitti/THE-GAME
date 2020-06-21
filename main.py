@@ -84,6 +84,7 @@ def start_game(gameid):
     app.logger.debug(game)
     game['status'] = 'started'
     game['stocks'] = list(range(2, 99))
+    game['submit'] = []
 
     # playerids = [player['playerid'] for player in game['players']]
     routelist = copy.copy(game['players'])
@@ -125,6 +126,8 @@ def processing_game(gameid):
             else:
                 break
 
+    game['submit'] = []
+
     cache.set(gameid, game)
     return 'go on to the next user'
 
@@ -158,6 +161,7 @@ def setcard_game(gameid, clientid, lineid, cardnum):
     else:
         return 'Error'
 
+    game['submit'].append(cardnum)
     player['holdcards'].remove(cardnum)
 
     cache.set(gameid, game)
