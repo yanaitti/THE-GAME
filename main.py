@@ -124,7 +124,7 @@ def start_game(gameid, rule_type=''):
 
     for player in players:
         player['holdcards'] = []
-        while len(player['holdcards']) < 60:
+        while len(player['holdcards']) < 6:
             player['holdcards'].append(game['stocks'].pop(random.randint(0, len(game['stocks']) - 1)))
 
     game['hightolow'] = []
@@ -149,7 +149,7 @@ def processing_game(gameid):
 
     # refresh holdcards for all members
     for player in players:
-        while len(player['holdcards']) < 60:
+        while len(player['holdcards']) < 6:
             if len(game['stocks']) > 0:
                 player['holdcards'].append(game['stocks'].pop(random.randint(0, len(game['stocks']) - 1)))
             else:
