@@ -105,13 +105,15 @@ def join_game(gameid, nickname='default'):
 
 # processing the game
 @app.route('/<gameid>/start')
-def start_game(gameid):
+@app.route('/<gameid>/start/<rule_type>')
+def start_game(gameid, rule_type=''):
     game = cache.get(gameid)
     app.logger.debug(gameid)
     app.logger.debug(game)
     game['status'] = 'started'
     game['stocks'] = list(range(2, 99))
     game['submit'] = []
+    game['rule'] = rule_type
 
     # playerids = [player['playerid'] for player in game['players']]
     routelist = copy.copy(game['players'])
@@ -122,7 +124,7 @@ def start_game(gameid):
 
     for player in players:
         player['holdcards'] = []
-        while len(player['holdcards']) < 6:
+        while len(player['holdcards']) < 60:
             player['holdcards'].append(game['stocks'].pop(random.randint(0, len(game['stocks']) - 1)))
 
     game['hightolow'] = []
@@ -147,7 +149,7 @@ def processing_game(gameid):
 
     # refresh holdcards for all members
     for player in players:
-        while len(player['holdcards']) < 6:
+        while len(player['holdcards']) < 60:
             if len(game['stocks']) > 0:
                 player['holdcards'].append(game['stocks'].pop(random.randint(0, len(game['stocks']) - 1)))
             else:
@@ -160,31 +162,58 @@ def processing_game(gameid):
 
 
 # set the card on the line
+# オリジナルルール
+# 1. 直前がぞろ目なら、ぞろ目を出せる(大小制限なし)
+# 2. 10戻り以上、20戻りや、30戻りが可能(大小制限なし)
+
 @app.route('/<gameid>/<clientid>/set/<int:lineid>/<int:cardnum>')
 def setcard_game(gameid, clientid, lineid, cardnum):
     game = cache.get(gameid)
     player = [player for player in game['players'] if player['playerid'] == clientid][0]
+    isHit = False
 
     if lineid in [0, 1]:
         highToLow = game['hightolow'][lineid]
         # 100 -> 2
         if highToLow[-1] > cardnum:
             highToLow.append(cardnum)
-        else:
-            if (highToLow[-1] + 10) == cardnum:
+            isHit = True
+        if (highToLow[-1] + 10) == cardnum and isHit == False:
+            highToLow.append(cardnum)
+            isHit = True
+        if game['rule'] == 'original' and isHit == False:
+            if len(str(cardnum)) > 1 and len(str(highToLow[-1])) > 1:
+                cardnum_str = str(cardnum)
+                latest_str = str(highToLow[-1])
+                if cardnum_str[0] == cardnum_str[1] and latest_str[0] == latest_str[1]:
+                    highToLow.append(cardnum)
+                    isHit = True
+            if highToLow[-1] % 10 == cardnum % 10:
                 highToLow.append(cardnum)
-            else:
-                return 'Error2'
+                isHit = True
+        if isHit == False:
+            return 'Error1'
     elif lineid in [2, 3]:
         lowToHigh = game['lowtohigh'][lineid%2]
         # 1 -> 99
         if lowToHigh[-1] < cardnum:
             lowToHigh.append(cardnum)
-        else:
-            if (lowToHigh[-1] - 10) == cardnum:
+            isHit = True
+        if (lowToHigh[-1] - 10) == cardnum and isHit == False:
+            lowToHigh.append(cardnum)
+            isHit = True
+        if game['rule'] == 'original' and isHit == False:
+            if len(str(cardnum)) > 1 and len(str(lowToHigh[-1])) > 1:
+                cardnum_str = str(cardnum)
+                latest_str = str(lowToHigh[-1])
+                if cardnum_str[0] == cardnum_str[1] and latest_str[0] == latest_str[1]:
+                    lowToHigh.append(cardnum)
+                    isHit = True
+            if lowToHigh[-1] % 10 == cardnum % 10:
                 lowToHigh.append(cardnum)
-            else:
-                return 'Error3'
+                isHit = True
+        if isHit == False:
+            return 'Error2'
     else:
         return 'Error'
 

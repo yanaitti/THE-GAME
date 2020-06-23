@@ -29,6 +29,9 @@
       <div id='sec1' style='display:none'>
         <hr/>
         <button id="startGame">ゲームを始める(Let's start the Game)</button><br/>
+        <input type='checkbox' name='rule_type' id="rule_type" value='original'>オリジナルルール(Use Original Rule)<br/>
+        1.&nbsp;直前がぞろ目ならぞろ目を出せる(大小制限なし)<br/>
+        2.&nbsp;10単位での戻りが無制限(大小制限なし)<br/>
       </div>
       <div id='sec2' style='display:none'>
         <h2>Member Rotation</h2>
@@ -48,7 +51,7 @@
         <hr/>
       </div>
       <div id='sec3' style='display:none'>
-        <input id="cardNum_inp" placeholder="番号を入力してください"><br/>
+        <input type='number' min='2' max='99' id="cardNum_inp" placeholder="番号を入力してください"><br/>
         <button id="putCard">カードを出す(Put the cards)</button><br/>
         <br/>
         <button id="nextPlayer">次の人へ(Go on Next user)</button><br/>

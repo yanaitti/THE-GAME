@@ -54,7 +54,7 @@ $(function() {
   // Start Game
   $('#startGame').click(function() {
     $('#message').empty();
-    $.getJSON(gId + '/start',
+    $.getJSON(gId + '/start/' + $('input:checkbox[name="rule_type"]:checked').val(),
       {
         type: 'get',
       }
