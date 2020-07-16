@@ -1,5 +1,28 @@
-@import url('https://fonts.googleapis.com/css2?family=Freckle+Face&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Slabo+27px&display=swap');
 #sec2{
-  font-family: 'Freckle Face', cursive;
+  font-family: 'Slabo 27px', serif;
   font-size: 20pt;
+  background-color: #000;
+  color: #fff;
+  padding: 5px;
+}
+
+span#gameCards0{
+  color: #fff;
+	text-shadow: 0 0 2px #fefcc9, 1px -1px 3px #feec85, -2px -2px 4px #ffae34, 2px -4px 5px #ec760c, -2px -6px 6px #cd4606, 0 -8px 7px #973716, 1px -9px 8px #451b0e;
+}
+
+span#gameCards1{
+  color: #fff;
+	text-shadow: 0 0 2px #fefcc9, 1px -1px 3px #feec85, -2px -2px 4px #ffae34, 2px -4px 5px #ec760c, -2px -6px 6px #cd4606, 0 -8px 7px #973716, 1px -9px 8px #451b0e;
+}
+
+span#gameCards2{
+  color: #fff;
+	text-shadow: 0 0 2px #fefcc9, 1px -1px 3px #feec85, -2px -2px 4px #ffae34, 2px -4px 5px #ec760c, -2px -6px 6px #cd4606, 0 -8px 7px #973716, 1px -9px 8px #451b0e;
+}
+
+span#gameCards3{
+  color: #fff;
+	text-shadow: 0 0 2px #fefcc9, 1px -1px 3px #feec85, -2px -2px 4px #ffae34, 2px -4px 5px #ec760c, -2px -6px 6px #cd4606, 0 -8px 7px #973716, 1px -9px 8px #451b0e;
 }

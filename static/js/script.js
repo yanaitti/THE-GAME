@@ -141,9 +141,25 @@ var status_check = function(gId, cId){
 
         // game cards
         $('#gameCards0').text(data.hightolow[0])
-        $('#gameCards1').text(data.hightolow[1])
-        $('#gameCards2').text(data.lowtohigh[0])
-        $('#gameCards3').text(data.lowtohigh[1])
+        $('#gameCards1').text(data.hightolow[1]);
+        $('#gameCards2').text(data.lowtohigh[0]);
+        $('#gameCards3').text(data.lowtohigh[1]);
+        // $('#gameCards0').empty();
+        // $('#gameCards1').empty();
+        // $('#gameCards2').empty();
+        // $('#gameCards3').empty();
+        // for(var i in data.hightolow[0].toString().split(',')){
+        //   $('<li id="gameCards0"><font id="gameCards0">' + data.hightolow[0][i] + '</font></li>').appendTo($('#gameCards0'));
+        // }
+        // for(var i in data.hightolow[1].toString().split(',')){
+        //   $('<li id="gameCards1">1</li>').appendTo($('#gameCards1'));
+        // }
+        // for(var i in data.lowtohigh[0].toString().split(',')){
+        //   $('<li id="gameCards2">1</li>').appendTo($('#gameCards2'));
+        // }
+        // for(var i in data.lowtohigh[1].toString().split(',')){
+        //   $('<li id="gameCards3">1</li>').appendTo($('#gameCards3'));
+        // }
 
         // hold cards
         $('#holdCards').text(data.players[playerPos].holdcards.join(','))
