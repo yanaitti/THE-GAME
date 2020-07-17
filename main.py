@@ -176,44 +176,48 @@ def setcard_game(gameid, clientid, lineid, cardnum):
         highToLow = game['hightolow'][lineid]
         # 100 -> 2
         if highToLow[-1] > cardnum:
-            highToLow.append(cardnum)
+            # highToLow.append(cardnum)
             isHit = True
         if (highToLow[-1] + 10) == cardnum and isHit == False:
-            highToLow.append(cardnum)
+            # highToLow.append(cardnum)
             isHit = True
         if game['rule'] == 'original' and isHit == False:
             if len(str(cardnum)) > 1 and len(str(highToLow[-1])) > 1:
                 cardnum_str = str(cardnum)
                 latest_str = str(highToLow[-1])
                 if cardnum_str[0] == cardnum_str[1] and latest_str[0] == latest_str[1]:
-                    highToLow.append(cardnum)
+                    # highToLow.append(cardnum)
                     isHit = True
             if highToLow[-1] % 10 == cardnum % 10:
-                highToLow.append(cardnum)
+                # highToLow.append(cardnum)
                 isHit = True
         if isHit == False:
             return 'Error1'
+        else:
+            highToLow.append(cardnum)
     elif lineid in [2, 3]:
         lowToHigh = game['lowtohigh'][lineid%2]
         # 1 -> 99
         if lowToHigh[-1] < cardnum:
-            lowToHigh.append(cardnum)
+            # lowToHigh.append(cardnum)
             isHit = True
         if (lowToHigh[-1] - 10) == cardnum and isHit == False:
-            lowToHigh.append(cardnum)
+            # lowToHigh.append(cardnum)
             isHit = True
         if game['rule'] == 'original' and isHit == False:
             if len(str(cardnum)) > 1 and len(str(lowToHigh[-1])) > 1:
                 cardnum_str = str(cardnum)
                 latest_str = str(lowToHigh[-1])
                 if cardnum_str[0] == cardnum_str[1] and latest_str[0] == latest_str[1]:
-                    lowToHigh.append(cardnum)
+                    # lowToHigh.append(cardnum)
                     isHit = True
             if lowToHigh[-1] % 10 == cardnum % 10:
-                lowToHigh.append(cardnum)
+                # lowToHigh.append(cardnum)
                 isHit = True
         if isHit == False:
             return 'Error2'
+        else:
+            lowToHigh.append(cardnum)
     else:
         return 'Error'
 
