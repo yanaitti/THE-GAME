@@ -14,12 +14,20 @@
       <div id='entry' style='display:none'>
         <input id="cName_inp" placeholder="ニックネームを入力してください"><br/>
         <br/>
+        {% if gameid %}
+        {% else %}
         <button id='createGame'>ゲームを作る(Make a Game)</button><br/>
         Game ID: <span id='gId'></span><br/>
+        <input type='text' id='uriWgId' /><input type='button' id='clickCopy' value='copy'><br/>
+        {% endif %}
         Game Status: <span id='gStatus'></span><br/>
         <hr/>
         <button id="joinGame">ゲームに参加する(Join the Game)</button><br/>
+        {% if gameid %}
+        <input type='hidden' id="gId_inp" value='{{ gameid }}'><br/>
+        {% else %}
         <input id="gId_inp" placeholder="GameIDを入力してください"><br/>
+        {% endif %}
         Your ID: <span id='cId'></span><br/>
         Your Name: <span id='cName'></span><br/>
         <hr/>
