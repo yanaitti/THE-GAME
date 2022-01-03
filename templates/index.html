@@ -49,6 +49,12 @@
         Your Turn: <span id='yTurn'></span><br/>
         Your Cards:<br/>
         <span id='holdCards'></span><br/>
+        <div id='sec3' style='display:none'>
+          <input type='number' min='2' max='99' id="cardNum_inp" placeholder="番号を入力してください"><br/>
+          <button id="putCard">カードを出す(Put the cards)</button><br/>
+          <br/>
+          <button id="nextPlayer">次の人へ(Go on Next user)</button><br/>
+        </div>
         <hr/>
         Game Cards:<br/>
         <input type='radio' name='area' id='area' value='0'/>[100&nbsp;>&nbsp;2]&nbsp;<span id='gameCards0'></span><br/>
@@ -58,12 +64,6 @@
         Submited Cards in turn:<br/>
         <div id='submitCards'></div>
         <hr/>
-      </div>
-      <div id='sec3' style='display:none'>
-        <input type='number' min='2' max='99' id="cardNum_inp" placeholder="番号を入力してください"><br/>
-        <button id="putCard">カードを出す(Put the cards)</button><br/>
-        <br/>
-        <button id="nextPlayer">次の人へ(Go on Next user)</button><br/>
       </div>
       <br/>
       <span id='message'></span><br/>
